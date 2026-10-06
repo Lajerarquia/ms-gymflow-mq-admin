@@ -1,0 +1,30 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: ms-gymflow-mq-admin
+  # RabbitMQ (clúster de 2 nodos en ec2-mq). AMQP se usa para reprocesar las DLQ.
+  #  - RABBITMQ_ADDRESSES: <ip-privada-ec2-mq>:5672,<ip-privada-ec2-mq>:5673
+  #  - RABBITMQ_USERNAME y RABBITMQ_PASSWORD: la contraseña solo en el .env de la EC2
+  rabbitmq:
+    addresses: ${RABBITMQ_ADDRESSES:localhost:5672,localhost:5673}
+    username: ${RABBITMQ_USERNAME:gymflow}
+    password: ${RABBITMQ_PASSWORD:}
+    connection-timeout: 5s
+
+gymflow:
+  mq-admin:
+    # API HTTP de la Management UI (lista de colas y publicación de mensajes de prueba)
+    management-url: ${RABBITMQ_MANAGEMENT_URL:http://localhost:15672}
+    # Tope de mensajes que mueve un reproceso por llamada (se puede bajar con ?max=)
+    reproceso-maximo: 500
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
