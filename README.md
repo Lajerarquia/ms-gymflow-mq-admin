@@ -1,8 +1,8 @@
 # ms-gymflow-mq-admin
 
 Administración de RabbitMQ para GymFlow (EP2): estado de las colas, mensajes de prueba y reproceso de las DLQ.
-Sin base de datos y **sin exponer a internet**: en la EC2 su puerto solo escucha en `127.0.0.1` y se usa con un
-túnel SSH. Por eso no valida JWT ni pasa por el API Gateway.
+Sin base de datos y **sin puertos publicados**: en `ec2-apps` solo lo alcanza ms-gymflow-bff por la red interna de
+Docker, que lo expone como `/api/admin/mq/**` (solo rol Admin, mismo filtro JWT). Por eso este servicio no valida JWT.
 
 No declara la topología (la dueña es ms-gymflow-notify). Solo opera sobre las colas `q.cmd.*`, publica únicamente en
 `cmd.direct` y `cmd.topic`, y reprocesa únicamente las 3 DLQ del caso.
@@ -53,8 +53,9 @@ RABBITMQ_PASSWORD=<contraseña> ./mvnw spring-boot:run      # puerto 8084
 curl -s localhost:8084/api/mq/queues
 ```
 
-En la EC2, desde tu PC: `ssh -i labsuser.pem -L 8084:localhost:8084 ec2-user@<ip-ec2-apps>` y luego
-`curl -s localhost:8084/api/mq/queues`.
+En AWS se usa a través del BFF: `GET https://<api-gateway>/api/admin/mq/queues` con el token de un Admin
+(ver `infra/docs/rabbitmq.md`). Rutas: `/api/admin/mq/queues`, `/api/admin/mq/test-messages`,
+`/api/admin/mq/queues/{dlq}/reprocess`.
 
 ## Pruebas
 

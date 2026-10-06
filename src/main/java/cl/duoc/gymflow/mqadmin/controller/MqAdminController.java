@@ -19,8 +19,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Administración de RabbitMQ para GymFlow. <b>No se expone a internet</b>: en la EC2 su puerto solo escucha en
- * 127.0.0.1 y se usa con un túnel SSH. Por eso no valida JWT.
+ * Administración de RabbitMQ para GymFlow. <b>No se expone a internet</b>: no publica puertos y solo lo llama
+ * ms-gymflow-bff por la red interna de Docker ({@code /api/admin/mq/**}, que ya validó el JWT y exige el rol Admin).
+ * Por eso aquí no se valida JWT.
  */
 @RestController
 @RequestMapping("/api/mq")
